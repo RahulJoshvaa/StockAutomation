@@ -27,7 +27,7 @@ services:
       - .env
     volumes:
       - .:/app
-    command: python airflow/scripts/table_insertion.py   # change to your main script
+    command: python airflow/scripts/table_insertion.py
 
   pgadmin:
     image: dpage/pgadmin4
