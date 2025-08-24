@@ -1,21 +1,37 @@
-import yfinance as yf
+import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
 
 def fetchStock():
-    ticker = yf.Ticker("RELIANCE.NS")
+    symbol = "AAPL"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
+
     try:
-        #1d in both so that just 1 row is returned
-        data = ticker.history(period="1d", interval="1d")
-        if not data.empty:
-            dataDictionary = {
-                'StockName': 'Reliance',
-                'Open': data['Open'].iloc[0],
-                'High': data['High'].iloc[0],
-                'Low': data['Low'].iloc[0],
-                'Close': data['Close'].iloc[0]
-            }
-            return dataDictionary
-        else:
-            return {"Error": "No data returned"}
+        response = requests.get(url)
+        data = response.json()
+
+
+        if "Time Series (Daily)" not in data:
+            return {"Error": data.get("Note", data.get("Error Message", "No data returned"))}
+
+        latest_date = list(data["Time Series (Daily)"].keys())[0]
+        latest_data = data["Time Series (Daily)"][latest_date]
+
+        dataDictionary = {
+            'StockName': 'Apple',
+            'Open': float(latest_data.get('1. open', 0)),
+            'High': float(latest_data.get('2. high', 0)),
+            'Low': float(latest_data.get('3. low', 0)),
+            'Close': float(latest_data.get('4. close', 0))
+        }
+
+        return dataDictionary
+
     except Exception as e:
-        return {"Error": str(e)}
+        return {"Error from data_fetch": str(e)}
+
+
 

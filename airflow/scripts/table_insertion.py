@@ -21,34 +21,33 @@ def insert_stock():
         INSERT INTO stocks (stock_name, open, high, low, close)
         VALUES (%s, %s, %s, %s, %s);
         """
-        # data = fetchStock()
-        # values = (
-        #     data["StockName"],
-        #     data["Open"],
-        #     data["High"],
-        #     data["Low"],
-        #     data["Close"]
-        # )
+        data = fetchStock()
         values = (
-            "StockName",
-            "120",
-            "125",
-            "118",
-            "124"
+            data["StockName"],
+            data["Open"],
+            data["High"],
+            data["Low"],
+            data["Close"]
         )
+        # values = (
+        #     "StockName",
+        #     "120",
+        #     "125",
+        #     "118",
+        #     "124"
+        # )
 
         cur.execute(insert_query, values)
         conn.commit()   # save changes
 
-        print("✅ Data inserted successfully")
+        print("Data inserted successfully")
 
         cur.close()
         conn.close()
+        return 1
 
     except Exception as e:
-        print("❌ Error:", e)
-i = 0
-while i < 5:
-    insert_stock()
-    time.sleep(5)
-    i += 1
+        print("Error from insertion:", e)
+        return 0
+time.sleep(10)
+insert_stock()
